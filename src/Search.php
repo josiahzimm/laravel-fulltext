@@ -36,7 +36,7 @@ class Search implements SearchInterface
         $termsMatch = '';
 
         if ($search) {
-            $terms = TermBuilder::terms('*'.$search);
+            $terms = TermBuilder::terms($search);
 
             $termsBool = '+'.$terms->implode(' +');
             $termsMatch = ''.$terms->implode(' ');
