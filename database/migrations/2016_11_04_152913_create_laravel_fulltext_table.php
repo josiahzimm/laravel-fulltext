@@ -14,7 +14,7 @@ class CreateLaravelFulltextTable extends Migration
     {
         Schema::create('laravel_fulltext', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('indexable_id');
+            $table->uuid('indexable_id');
             $table->string('indexable_type');
             $table->text('indexed_title');
             $table->text('indexed_content');
