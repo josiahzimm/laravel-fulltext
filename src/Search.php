@@ -57,4 +57,25 @@ class Search implements SearchInterface
           ->with('indexable');
         return $query;
     }
+    
+    public function searchId($search)
+    {
+        $termsBool = '';
+        $termsMatch = '';
+
+        if ($search) {
+            $terms = TermBuilder::terms($search);
+
+            $termsBool = '+'.$terms->implode(' +');
+            $termsMatch = ''.$terms->implode(' ');
+        }
+
+        $titleWeight = str_replace(',', '.', (float)config('laravel-fulltext.weight.title', 1.5));
+        $contentWeight = str_replace(',', '.', (float)config('laravel-fulltext.weight.content', 1.0));
+
+        $query = IndexedRecord::query()
+          ->whereRaw('MATCH (indexable_id) AGAINST (? IN BOOLEAN MODE)', [$termsBool])
+          ->with('indexable');
+        return $query;
+    }
 }
