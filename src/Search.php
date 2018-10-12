@@ -13,6 +13,12 @@ class Search implements SearchInterface
         $query = $this->searchQuery($search);
         return $query->get();
     }
+    
+    public function uuid($search)
+    {
+        $query = $this->searchId($search);
+        return $query->get();
+    }
 
     /**
      * @param $search
@@ -54,6 +60,22 @@ class Search implements SearchInterface
               [$termsMatch, $termsMatch]
           )
           ->limit(config('laravel-fulltext.limit-results'))
+          ->with('indexable');
+        return $query;
+    }
+    public function searchId($search)
+    {
+        $termsBool = '';
+        $termsMatch = '';
+        if ($search) {
+            $terms = TermBuilder::terms($search);
+            $termsBool = '+'.$terms->implode(' +');
+            $termsMatch = ''.$terms->implode(' ');
+        }
+        $titleWeight = str_replace(',', '.', (float)config('laravel-fulltext.weight.title', 1.5));
+        $contentWeight = str_replace(',', '.', (float)config('laravel-fulltext.weight.content', 1.0));
+        $query = IndexedRecord::query()
+          ->whereRaw('MATCH (indexable_id) AGAINST (? IN BOOLEAN MODE)', [$termsBool])
           ->with('indexable');
         return $query;
     }
